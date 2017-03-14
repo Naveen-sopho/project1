@@ -49,5 +49,10 @@ print_r($college_name);
 print_r($college_address);
 print_r($facilities);
 print_r($review);
-
+for($s=0;$s<30;$s++)
+{
+    mysqli_query($dbconnect,"SELECT * FROM colleges");
+    mysqli_query($dbconnect,"INSERT INTO colleges (college_name) VALUES(\"".$college_name[$s]."\")");
+}
+ mysqli_close($dbconnect);
 ?>
