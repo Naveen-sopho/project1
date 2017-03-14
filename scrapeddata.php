@@ -1,6 +1,6 @@
 <?php
 
-//}
+require("mysqlconnect.php");
 
 if (empty($_GET['q']))
 {
@@ -32,26 +32,22 @@ for($j=0;$j<30;$j++)
   $college_address[$j] = $ca[1][0];
   $facilities[$j] = implode("|", $f[1]);
 }
+//array declaration
+$r = [];
+$review = [];
+for($k=0;$k<30;$k++)
+{
+  preg_match_all('/<div class="tuple-revw-sec"><span><b>\s*([^<]+)<\/b><a target="[^"]+"\stype="reviews/i',$matches[0][$k],$r);
+
+  if(!$r[1])
+    $review[$k] = "0";
+  else
+    $review[$k] = $r[1][0];
+}
 //checking arrays
 print_r($college_name);
 print_r($college_address);
 print_r($facilities);
-
-
-
-//echo "<b>The following titles matched your query for '" . htmlspecialchars($query) . "':</b><br />";
-//foreach($titles as $title) 
-// {
-//  mysqli_query($dbconnect,"SELECT * FROM colleges");
-//  mysqli_query($dbconnect,"INSERT INTO colleges (college_name) VALUES(\"".$title."\")");
-//
-//}
-//foreach($college_address as $add)
-//{
-//   mysqli_query($dbconnect,"SELECT * FROM college_address");
-//    mysqli_query($dbconnect,"INSERT INTO college_address (college_add) VALUES(\"".$add."\")");
-//}
-//  mysqli_close($dbconnect);
-//
+print_r($review);
 
 ?>
