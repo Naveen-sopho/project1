@@ -34,25 +34,25 @@ for($j=0;$j<30;$j++)
 }
 //array declaration
 $r = [];
-$review = [];
+$reviews = [];
 for($k=0;$k<30;$k++)
 {
   preg_match_all('/<div class="tuple-revw-sec"><span><b>\s*([^<]+)<\/b><a target="[^"]+"\stype="reviews/i',$matches[0][$k],$r);
 
   if(!$r[1])
-    $review[$k] = "0";
+    $reviews[$k] = "0";
   else
-    $review[$k] = $r[1][0];
+    $reviews[$k] = $r[1][0];
 }
 //checking arrays
 print_r($college_name);
 print_r($college_address);
 print_r($facilities);
-print_r($review);
+print_r($reviews);
 for($s=0;$s<30;$s++)
 {
     mysqli_query($dbconnect,"SELECT * FROM colleges");
-    mysqli_query($dbconnect,"INSERT INTO colleges (college_name) VALUES(\"".$college_name[$s]."\")");
+    mysqli_query($dbconnect,"INSERT INTO colleges (college_name,college_address,facilities,reviews) VALUES(\"".$college_name[$s]."\",\"".$college_address[$s]."\",\"".$facilities[$s]."\",\"".$reviews[$s]."\")");
 }
  mysqli_close($dbconnect);
 ?>
