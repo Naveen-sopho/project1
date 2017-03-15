@@ -1,3 +1,10 @@
+   <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>database connections</title>
+    </head>
+    <body>
 <?php
 
 require("mysqlconnect.php");
@@ -10,11 +17,26 @@ if (empty($_GET['q']))
 }
 mysqli_query($dbconnect, "TRUNCATE TABLE colleges");
 $query = $_GET['q'];
-echo $query;
-$wet=file_get_contents($_GET['q']);
+//echo $query;
+
+//$wet=file_get_contents($_GET['q']);
+$ch = curl_init();
+$curlConfig = array(
+  CURLOPT_URL            => $query,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_BINARYTRANSFER => true,
+  CURLOPT_SSL_VERIFYPEER => false
+);
+curl_setopt_array($ch, $curlConfig);
+$wet = curl_exec($ch);
+curl_close($ch);
 $wet = preg_replace("/\n/i", "", $wet);
 print_r("<pre>");
-preg_match_all('/<div class="clg-tpl-parent">(.*?)<input type="hidden"/i', $wet, $matches);
+if(!preg_match_all('/<div class="clg-tpl-parent">(.*?)<input type="hidden"/i', $wet, $matches))
+{
+  echo "No colleges found";
+}
+
 //array declaration
 $c = [];
 $college_name = [];
@@ -36,7 +58,7 @@ for($j=0;$j<$size;$j++)
 }
 //array declaration
 
-print_r($matches);
+//print_r($matches);
 $r = [];
 $reviews = [];
 for($k=0;$k<$size;$k++)
@@ -56,11 +78,37 @@ for($k=0;$k<$size;$k++)
 
 for($s=0;$s<$size;$s++)
 {
-    mysqli_query($dbconnect,"SELECT * FROM colleges");
+  $result =  mysqli_query($dbconnect,"SELECT * FROM colleges");
     mysqli_query($dbconnect,"INSERT INTO colleges (college_name,college_address,facilities,reviews) VALUES(\"".$college_name[$s]."\",\"".$college_address[$s]."\",\"".$facilities[$s]."\",\"".$reviews[$s]."\")");
 }
 
- mysqli_close($dbconnect);
+ 
 
 ?>
-
+<table border="2" style= "background-color: #cccccc; color: #761a9b; margin: 0 auto;" >
+      <thead>
+        <tr>
+          <th>COLLEGE NAME</th>
+          <th>COLLEGE ADDRESS</th>
+          <th>FACILITIES</th>
+          <th>NO OF REVIEWS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+          while( $row = mysqli_fetch_assoc( $result ) )
+          {
+            echo
+            "<tr>
+              <td>{$row['college_name']}</td>
+              <td>{$row['college_address']}</td>
+              <td>{$row['facilities']}</td>
+              <td>{$row['reviews']}</td>
+            </tr>\n";
+          }
+        ?>
+      </tbody>
+    </table>
+     <?php mysqli_close($dbconnect); ?>
+    </body>
+    </html>
